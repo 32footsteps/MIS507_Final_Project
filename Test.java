@@ -16,7 +16,9 @@ public class Test{
       default:
         System.out.println("Not an option");
       break;
-    }
+    // RollDice roll=new FirstRoll().getFirstRoll();
+    // roll=new AddRoll(i,roll);
+  }
     c.close();
   }
 }

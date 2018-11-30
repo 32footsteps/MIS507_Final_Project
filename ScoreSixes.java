@@ -1,11 +1,5 @@
 public class ScoreSixes implements ScoreProcessor{
-  private static ScoreSixes instance;
   private int num=0;
-
-  public static ScoreSixes getInstance(){
-    if(instance==null){return new ScoreSixes();}
-    return instance;
-  }
 
   public ScoreSixes(){}
 

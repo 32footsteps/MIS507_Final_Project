@@ -1,11 +1,5 @@
 public class ScoreFoak implements ScoreProcessor{
-  private static ScoreFoak instance;
   private int ttl=0;
-
-  public static ScoreFoak getInstance(){
-    if(instance==null){return new ScoreFoak();}
-    return instance;
-  }
 
   public ScoreFoak(){}
 
@@ -18,9 +12,7 @@ public class ScoreFoak implements ScoreProcessor{
       li=i[x];
     }
     if(num>3){
-      for (int v:i){
-        ttl+=v;
-      }
+      for (int v:i){ttl+=v;}
     }
     s.setFoak(ttl);
   }

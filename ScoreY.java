@@ -1,19 +1,16 @@
 public class ScoreY implements ScoreProcessor{
-  private static ScoreY instance;
-  private int ttl=0;
-
-  public static ScoreY getInstance(){
-    if(instance==null){return new ScoreY();}
-    return instance;
-  }
+  private int num=0;
 
   public ScoreY(){}
 
   @Override
   public void setScore(int[] i, Scorecard s){
-    for(int v:i){
-      ttl+=v;
+    int li=i[0];
+    for(int x=0;x<i.length;x++){
+      if(i[x]==li){num++;}
+      li=i[x];
     }
-    s.setY(ttl);
+    if(num==5){s.setY(50);}
+    else{s.setY(0);}
   }
 }
