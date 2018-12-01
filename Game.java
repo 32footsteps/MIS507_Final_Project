@@ -4,6 +4,7 @@ public class Game{
   private Scorecard sc=Scorecard.getInstance();
   private RollDice rd=RollDice.getInstance();
   private ScoreFactory sf=new ScoreFactory();
+  private GameCounter gc=new GameCounter();
   Scanner c=new Scanner(System.in);
   int x=0;
 
@@ -20,6 +21,7 @@ public class Game{
   public void viewUI(){
     this.clearScreen();
     this.viewSC();
+    System.out.println("This is turn number "+gc.getCount());
     this.viewDice();
   }
 
@@ -34,9 +36,10 @@ public class Game{
 
   public void firstRoll(){
     x=0;
+    gc.setCount();
     rd.newRoll();
     this.viewUI();
-    x++;System.out.println("x="+x);
+    x++;
     this.rollAgain();
   }
 
@@ -83,12 +86,25 @@ public class Game{
 
   public void enterScore(ScoreProcessor sp){
     sp.setScore(rd.getRoll(),sc);
+
     this.clearScreen();
     System.out.println(sc.toString());
-    System.out.println("Next turn...");
-    try{Thread.sleep(5000);}
-    catch (InterruptedException e){e.printStackTrace();}
+
+    if(gc.getCount()<13){
+      System.out.println("Next turn...");
+
+      try{Thread.sleep(5000);}
+      catch (InterruptedException e){e.printStackTrace();}
+
+      this.viewUI();
+      this.firstRoll();
+    }
+    else{this.endGame();}
+  }
+
+  public void endGame(){
     this.viewUI();
-    this.firstRoll();
+    System.out.println("THANK YOU FOR PLAYING, GOOD-BYE");
+    c.close();
   }
 }

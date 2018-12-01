@@ -1,10 +1,12 @@
 public class Scorecard{
   private static Scorecard instance;
   private int[] ts = new int[6];
-  private int[] bs = new int[8];
+  private int[] bs = new int[7];
   private String u="";
 
   public Scorecard(){
+    for(int j=0;j<ts.length;j++){ts[j]+=-1;}
+    for(int j=0;j<bs.length;j++){bs[j]+=-1;}
   }
 
   public void setName(String s){this.u=s;}
@@ -17,54 +19,64 @@ public class Scorecard{
 
   public int ts(){
     int num=0;
-    for(int i:ts)num+=i;
+    for(int i:ts){if(i!=-1){num+=i;}}
     return num;
   }
 
   public int bs(){
     int num=0;
-    for(int i:bs)num+=i;
+    for(int i:bs){if(i!=-1){num+=i;}}
     return num;
   }
 
-  public void setOnes(int i){this.ts[0]+=i;}
-  public int getOnes(){return this.ts[0];}
+  public String getTopScore(int i){
+    if(this.ts[i]==-1){return "--";}
+    else{return ""+this.ts[i];}
+  }
 
-  public void setTwos(int i){this.ts[1]+=i;}
-  public int getTwos(){return this.ts[1];}
+  public String getBottomScore(int i){
+    if(this.bs[i]==-1){return "--";}
+    else{return ""+this.bs[i];}
+  }
 
-  public void setThrees(int i){this.ts[2]+=i;}
-  public int getThrees(){return this.ts[2];}
+  public void setOnes(int i){this.ts[0]=i;}
+  public String getOnes(){return getTopScore(0);}
 
-  public void setFours(int i){this.ts[3]+=i;}
-  public int getFours(){return this.ts[3];}
+  public void setTwos(int i){this.ts[1]=i;}
+  public String getTwos(){return getTopScore(1);}
 
-  public void setFives(int i){this.ts[4]+=i;}
-  public int getFives(){return this.ts[4];}
+  public void setThrees(int i){this.ts[2]=i;}
+  public String getThrees(){return getTopScore(2);}
 
-  public void setSixes(int i){this.ts[5]+=i;}
-  public int getSixes(){return this.ts[5];}
+  public void setFours(int i){this.ts[3]=i;}
+  public String getFours(){return getTopScore(3);}
 
-  public void setToak(int i){this.bs[0]+=i;}
-  public int getToak(){return this.bs[0];}
+  public void setFives(int i){this.ts[4]=i;}
+  public String getFives(){return getTopScore(4);}
 
-  public void setFoak(int i){this.bs[1]+=i;}
-  public int getFoak(){return this.bs[1];}
+  public void setSixes(int i){this.ts[5]=i;}
+  public String getSixes(){return getTopScore(5);}
 
-  public void setFH(int i){this.bs[2]+=i;}
-  public int getFH(){return this.bs[2];}
+  public void setToak(int i){this.bs[0]=i;}
+  public String getToak(){return getBottomScore(0);}
 
-  public void setSS(int i){this.bs[3]+=i;}
-  public int getSS(){return this.bs[3];}
+  public void setFoak(int i){this.bs[1]=i;}
+  public String getFoak(){return getBottomScore(1);}
 
-  public void setLS(int i){this.bs[4]+=i;}
-  public int getLS(){return this.bs[4];}
+  public void setFH(int i){this.bs[2]=i;}
+  public String getFH(){return getBottomScore(2);}
 
-  public void setY(int i){this.bs[5]+=i;}
-  public int getY(){return this.bs[5];}
+  public void setSS(int i){this.bs[3]=i;}
+  public String getSS(){return getBottomScore(3);}
 
-  public void setC(int i){this.bs[6]+=i;}
-  public int getC(){return this.bs[6];}
+  public void setLS(int i){this.bs[4]=i;}
+  public String getLS(){return getBottomScore(4);}
+
+  public void setY(int i){this.bs[5]=i;}
+  public String getY(){return getBottomScore(5);}
+
+  public void setC(int i){this.bs[6]=i;}
+  public String getC(){return getBottomScore(6);}
 
   public String toString(){
     String s="";

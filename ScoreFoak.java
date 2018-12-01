@@ -1,19 +1,15 @@
-public class ScoreFoak implements ScoreProcessor{
-  private int ttl=0;
+import java.util.Arrays;
 
+public class ScoreFoak implements ScoreProcessor{
   public ScoreFoak(){}
 
   @Override
   public void setScore(int[] i, Scorecard s){
-    int num=0;
-    int li=i[0];
-    for(int x=0;x<i.length;x++){
-      if(i[x]==li){num++;}
-      li=i[x];
-    }
-    if(num>3){
+    int ttl=0;
+    Arrays.sort(i);
+
+    if(i[0]==i[3]||i[1]==i[4])
       for (int v:i){ttl+=v;}
-    }
     s.setFoak(ttl);
   }
 }

@@ -1,3 +1,5 @@
+import java.util.*;
+
 public class ScoreSS implements ScoreProcessor{
   private int num=0;
 
@@ -13,6 +15,5 @@ public class ScoreSS implements ScoreProcessor{
     }
     if(num==3){s.setSS(30);}
     else{s.setSS(0);}
-    }
   }
 }
