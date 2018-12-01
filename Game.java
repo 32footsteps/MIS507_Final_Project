@@ -12,31 +12,34 @@ public class Game{
   public void setName(String s){sc.setName(s);}
   public String getName(){return sc.getName();}
 
+  public void clearScreen() {
+   System.out.print("\033[H\033[2J");
+   System.out.flush();
+  }
+
   public void firstRoll(){
     x=0;
-    System.out.println(x);
     rd.newRoll();
-    System.out.println("Your first roll of the dice:");
-    this.viewDice();
-    x++;
+    this.viewUI();
+    x++;System.out.println("x="+x);
     this.rollAgain();
-    System.out.println(x);
   }
 
   public void rollAgain(){
     if(x!=3){
       System.out.println("Do you want to roll again?");
       if(c.nextLine().equals("y")){
+        x++;
         this.pickDice();
       }
-      else{
-        x++;
-        this.rollAgain();
-      }
+      else{this.pickScore();}
     }
-    else{
-      this.pickScore();
-    }
+  }
+
+  public void viewUI(){
+    this.clearScreen();
+    this.viewSC();
+    this.viewDice();
   }
 
   public void pickDice(){
@@ -49,9 +52,9 @@ public class Game{
       this.pickDice();
     }
     else{
-      this.viewDice();
-      x++;
-      this.rollAgain();
+      this.viewUI();
+      if(x<3){this.rollAgain();}
+      else{this.pickScore();}
     }
   }
 
@@ -60,13 +63,18 @@ public class Game{
   }
 
   public void viewDice(){
+    System.out.println("YOUR CURRENT DICE ROLL:");
     rd.printRoll();
   }
 
-  public void pickScore(){
+  public void viewSC(){
     System.out.println(sc.toString());
+  }
+
+  public void pickScore(){
+    this.viewUI();
     System.out.println("Choose the row number that matches where you want to enter your score");
-    System.out.println("***to enter a 0 choose a field that doesn't match your roll");
+    System.out.println("***to enter a score of 0 choose a field that doesn't match your roll");
     System.out.println("Your choice: ");
     ScoreProcessor sp = sf.getScore(c.nextInt());
     c.nextLine();
@@ -75,9 +83,12 @@ public class Game{
 
   public void enterScore(ScoreProcessor sp){
     sp.setScore(rd.getRoll(),sc);
-    System.out.println("Your scorecard now: ");
+    this.clearScreen();
     System.out.println(sc.toString());
-    System.out.println("Next roll...");
+    System.out.println("Next turn...");
+    try{Thread.sleep(5000);}
+    catch (InterruptedException e){e.printStackTrace();}
+    this.viewUI();
     this.firstRoll();
   }
 }

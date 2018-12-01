@@ -101,11 +101,11 @@ public class Scorecard{
     s+="------------------------\n";
     s+="------------------------\n";
     if(this.ts()>=63){
-      s+="       TOTAL SCORE: \n"+(this.ts()+35+this.bs());
+      s+="       TOTAL SCORE: "+(this.ts()+35+this.bs());
     }else{
-      s+="       TOTAL SCORE: \n"+(this.ts()+this.bs());
+      s+="       TOTAL SCORE: "+(this.ts()+this.bs());
     }
-    s+="-----------------------\n";
+    s+="\n-----------------------\n";
     return s;
   }
 }

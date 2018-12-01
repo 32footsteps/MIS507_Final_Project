@@ -10,8 +10,12 @@ public class SoloGame extends Game{
     System.out.println("Welcome, "+super.getName());
     System.out.println("######################################");
     System.out.println("LET\'S PLAY!");
+
+    try{Thread.sleep(5000);}
+    catch (InterruptedException e){e.printStackTrace();}
+    
+    super.clearScreen();
     super.firstRoll();
-    super.rollAgain();
   }
 
   public static SoloGame getInstance(){
