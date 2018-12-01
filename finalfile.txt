@@ -92,7 +92,7 @@ public class Game{
   }
 
   public void newRoll(int i){
-    r1.secondRoll(i);
+    r1.reRoll(i);
   }
 
   public void viewDice(){
@@ -143,7 +143,7 @@ public class RollDice{
     return r;
   }
 
-  public void secondRoll(int i){
+  public void reRoll(int i){
     this.getRoll();
     r[i]=this.newValue();
     this.setRoll(r);

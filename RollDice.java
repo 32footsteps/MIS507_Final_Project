@@ -26,7 +26,7 @@ public class RollDice{
     return r;
   }
 
-  public void secondRoll(int i){
+  public void reRoll(int i){
     this.getRoll();
     r[i]=this.newValue();
     this.setRoll(r);
@@ -37,12 +37,12 @@ public class RollDice{
     return d.getValue();
   }
 
-  public void setString(int[] il){
+  public void setString(int[] i){
     dstr="Dice:  ";
     vstr="Value: ";
-    for(int i=0;i<il.length;i++){
-      dstr=dstr+"["+(i+1)+"] ";
-      vstr=vstr+" "+il[i]+"  ";
+    for(int j=0;j<i.length;j++){
+      dstr=dstr+"["+(j+1)+"] ";
+      vstr=vstr+" "+i[j]+"  ";
     }
   }
 

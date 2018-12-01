@@ -17,12 +17,31 @@ public class Game{
    System.out.flush();
   }
 
+  public void viewUI(){
+    this.clearScreen();
+    this.viewSC();
+    this.viewDice();
+  }
+
+  public void viewDice(){
+    System.out.println("YOUR CURRENT DICE ROLL:");
+    rd.printRoll();
+  }
+
+  public void viewSC(){
+    System.out.println(sc.toString());
+  }
+
   public void firstRoll(){
     x=0;
     rd.newRoll();
     this.viewUI();
     x++;System.out.println("x="+x);
     this.rollAgain();
+  }
+
+  public void newRoll(int i){
+    rd.reRoll(i);
   }
 
   public void rollAgain(){
@@ -34,12 +53,6 @@ public class Game{
       }
       else{this.pickScore();}
     }
-  }
-
-  public void viewUI(){
-    this.clearScreen();
-    this.viewSC();
-    this.viewDice();
   }
 
   public void pickDice(){
@@ -56,19 +69,6 @@ public class Game{
       if(x<3){this.rollAgain();}
       else{this.pickScore();}
     }
-  }
-
-  public void newRoll(int i){
-    rd.secondRoll(i);
-  }
-
-  public void viewDice(){
-    System.out.println("YOUR CURRENT DICE ROLL:");
-    rd.printRoll();
-  }
-
-  public void viewSC(){
-    System.out.println(sc.toString());
   }
 
   public void pickScore(){
