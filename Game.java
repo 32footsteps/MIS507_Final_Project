@@ -5,8 +5,11 @@ public class Game{
   private RollDice rd=RollDice.getInstance();
   private ScoreFactory sf=new ScoreFactory();
   private GameCounter gc=new GameCounter();
+  private RollValidate rv=new RollValidate();
   Scanner c=new Scanner(System.in);
+  List<Integer> l=new ArrayList<Integer>();
   int x=0;
+
 
   public Game(){}
 
@@ -21,7 +24,7 @@ public class Game{
   public void viewUI(){
     this.clearScreen();
     this.viewSC();
-    System.out.println("This is turn number "+gc.getCount());
+    System.out.println("This is turn number "+(x));
     this.viewDice();
   }
 
@@ -34,12 +37,16 @@ public class Game{
     System.out.println(sc.toString());
   }
 
+  public void waitASec(){
+    try{Thread.sleep(2500);}
+    catch (InterruptedException e){e.printStackTrace();}
+  }
+
   public void firstRoll(){
-    x=0;
+    x=1;
     gc.setCount();
     rd.newRoll();
     this.viewUI();
-    x++;
     this.rollAgain();
   }
 
@@ -61,28 +68,63 @@ public class Game{
   public void pickDice(){
     System.out.println("Which dice do you want to reroll? (pick the dice number)");
     int num=c.nextInt();
-    this.newRoll(num-1);
+    l.add(num);
     c.nextLine();
     System.out.println("Do you want to change another dice?");
     if(c.nextLine().equals("y")){
       this.pickDice();
     }
     else{
-      this.viewUI();
-      if(x<3){this.rollAgain();}
-      else{this.pickScore();}
+      if(!rv.getValidate(l)){
+        this.viewUI();
+        System.out.println("OK, lets start over...");
+        this.waitASec();
+        l.clear();
+        this.viewUI();
+        this.pickDice();
+      }
+      else{
+        this.viewUI();
+        System.out.println("Re-rolling your chosen dice...");
+        for(int i:l){
+          this.newRoll(i-1);
+        }
+        l.clear();
+        this.waitASec();
+        this.viewUI();
+        if(x<3){this.rollAgain();}
+        else{this.pickScore();}
+      }
     }
   }
 
   public void pickScore(){
     this.viewUI();
+    int num=0;
+    String str;
     System.out.println("Choose the row number that matches where you want to enter your score");
     System.out.println("***to enter a score of 0 choose a field that doesn't match your roll");
     System.out.println("Your choice: ");
-    ScoreProcessor sp = sf.getScore(c.nextInt());
-    c.nextLine();
-    this.enterScore(sp);
-  }
+    str=c.nextLine();
+    try{
+      num=Integer.parseInt(str);
+    }
+    catch(NumberFormatException e)
+    {
+      System.out.println("Wrong selection, please pick again...");
+      this.waitASec();
+      this.pickScore();
+    }
+    if(num>0 && num<=13){
+      ScoreProcessor sp = sf.getScore(num);
+      this.enterScore(sp);
+    }
+    else{
+      System.out.println("Wrong selection, please pick again...");
+      this.waitASec();
+      this.pickScore();
+    }
+}
 
   public void enterScore(ScoreProcessor sp){
     sp.setScore(rd.getRoll(),sc);
@@ -93,12 +135,10 @@ public class Game{
     if(gc.getCount()<13){
       System.out.println("Next turn...");
 
-      try{Thread.sleep(5000);}
-      catch (InterruptedException e){e.printStackTrace();}
-
-      this.viewUI();
+      this.waitASec();
       this.firstRoll();
     }
+
     else{this.endGame();}
   }
 
