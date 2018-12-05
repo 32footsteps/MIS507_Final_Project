@@ -4,8 +4,15 @@ public class ScoreThrees implements ScoreProcessor{
   public ScoreThrees(){}
 
   @Override
-  public void setScore(int[] i, Scorecard s){
-    for (int v:i){if(v==3)num+=v;}
-    s.setThrees(num);
+  public boolean setScore(int[] i, Scorecard s){
+    for (int v:i){
+      if(v==3)
+        num+=v;
+    }
+    if(PreventDoubleScore.checkScore(s.getThrees())){
+      s.setThrees(num);
+      return true;
+    }
+    return false;
   }
 }

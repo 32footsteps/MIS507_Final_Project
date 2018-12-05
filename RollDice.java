@@ -14,8 +14,13 @@ public class RollDice{
     return instance;
   }
 
-  public void setRoll(int[] i){this.r=i;}
-  public int[] getRoll(){return this.r;}
+  public void setRoll(int[] i){
+    this.r=i;
+  }
+
+  public int[] getRoll(){
+    return this.r;
+  }
 
   public int[] newRoll(){
     for(int i=0;i<r.length;i++){
@@ -46,8 +51,13 @@ public class RollDice{
     }
   }
 
-  public String getD(){return dstr;}
-  public String getV(){return vstr;}
+  public String getD(){
+    return dstr;
+  }
+
+  public String getV(){
+    return vstr;
+  }
 
   public void printRoll(){
     this.setString(this.getRoll());

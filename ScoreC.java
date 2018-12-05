@@ -4,8 +4,12 @@ public class ScoreC implements ScoreProcessor{
   public ScoreC(){}
 
   @Override
-  public void setScore(int[] i, Scorecard s){
+  public boolean setScore(int[] i, Scorecard s){
     for(int v:i){ttl+=v;}
-    s.setC(ttl);
+    if(PreventDoubleScore.checkScore(s.getFives())){
+      s.setC(ttl);
+      return true;
+    }
+    return false;
   }
 }

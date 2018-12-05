@@ -1,0 +1,698 @@
+public class AddRoll extends RollDice{
+  public AddRoll(int[] i, RollDice rd){
+    for(int v:i){
+      rd.reRoll(v);
+    }
+    rd.printRoll();
+  }
+}
+import java.util.*;
+
+public class Dice {
+  private static Dice instance;
+  private Random r=new Random();
+  int v=0;
+
+  public static Dice getInstance(){
+    if(instance==null){return new Dice();}
+    return instance;
+  }
+
+  public Dice(){this.setValue();}
+  public void setValue(){this.v=1+r.nextInt(6);}
+  public int getValue(){return v;}
+}
+import java.util.*;
+
+public class DuoGame extends Game{
+  private static DuoGame instance;
+  private Scanner c=new Scanner(System.in);
+
+  public DuoGame(){
+    System.out.print("Player 1, what is your name? ");
+    super.setName(c.nextLine());
+    System.out.println("Welcome, "+super.getName());
+
+    System.out.print("Player 2, what is your name? ");
+    super.setName(c.nextLine());
+    System.out.println("Welcome, "+super.getName());
+
+    System.out.println("######################################");
+    System.out.println("LET\'S PLAY!");
+    super.firstRoll();
+    super.rollAgain();
+  }
+
+  public static DuoGame getInstance(){
+    if(instance==null){return new DuoGame();}
+    return instance;
+  }
+}
+public class FirstRoll extends RollDice{
+  RollDice rd=RollDice.getInstance();
+
+  public FirstRoll(){
+    rd.newRoll();
+    rd.printRoll();
+  }
+
+  public RollDice getFirstRoll(){return rd;}
+}
+public class GameCounter{
+  private int c=0;
+  public GameCounter(){}
+  public void setCount(){this.c++;}
+  public int getCount(){return c;}
+}
+import java.util.*;
+
+public class Game{
+  private Scorecard sc=Scorecard.getInstance();
+  private RollDice rd=RollDice.getInstance();
+  private ScoreFactory sf=new ScoreFactory();
+  private GameCounter gc=new GameCounter();
+  private RollValidate rv=new RollValidate();
+  Scanner c=new Scanner(System.in);
+  List<Integer> l=new ArrayList<Integer>();
+  int x=0;
+
+
+  public Game(){}
+
+  public void setName(String s){sc.setName(s);}
+  public String getName(){return sc.getName();}
+
+  public void clearScreen() {
+   System.out.print("\033[H\033[2J");
+   System.out.flush();
+  }
+
+  public void viewUI(){
+    this.clearScreen();
+    this.viewSC();
+    System.out.println("This is turn number "+(x));
+    this.viewDice();
+  }
+
+  public void viewDice(){
+    System.out.println("YOUR CURRENT DICE ROLL:");
+    rd.printRoll();
+  }
+
+  public void viewSC(){
+    System.out.println(sc.toString());
+  }
+
+  public void waitASec(){
+    try{Thread.sleep(2500);}
+    catch (InterruptedException e){e.printStackTrace();}
+  }
+
+  public void firstRoll(){
+    x=1;
+    gc.setCount();
+    rd.newRoll();
+    this.viewUI();
+    this.rollAgain();
+  }
+
+  public void newRoll(int i){
+    rd.reRoll(i);
+  }
+
+  public void rollAgain(){
+    if(x!=3){
+      System.out.println("Do you want to roll again?");
+      if(c.nextLine().equals("y")){
+        x++;
+        this.pickDice();
+      }
+      else{this.pickScore();}
+    }
+  }
+
+  public void pickDice(){
+    int num=0;
+    String str="";
+    System.out.println("Which dice do you want to reroll? (pick the dice number)");
+    str=c.nextLine();
+    try{
+      num=Integer.parseInt(str);
+    }
+    catch(NumberFormatException e)
+    {
+      System.out.println("Wrong selection, please pick again...");
+      this.waitASec();
+      this.pickDice();
+    }
+    if(num<1&&num>5){
+      System.out.println("Wrong selection, please pick again...");
+      this.waitASec();
+      this.pickDice();
+    }
+    l.add(num);
+    System.out.println("Do you want to change another dice?");
+    if(c.nextLine().equals("y")){
+      this.pickDice();
+    }
+    else{
+      if(!rv.getValidate(l)){
+        this.viewUI();
+        System.out.println("OK, lets start over...");
+        this.waitASec();
+        l.clear();
+        this.viewUI();
+        this.pickDice();
+      }
+      else{
+        this.viewUI();
+        System.out.println("Re-rolling your chosen dice...");
+        for(int i:l){
+          this.newRoll(i-1);
+        }
+        l.clear();
+        this.waitASec();
+        this.viewUI();
+        if(x<3){this.rollAgain();}
+        else{this.pickScore();}
+      }
+    }
+  }
+
+  public void pickScore(){
+    this.viewUI();
+    int num=0;
+    String str;
+    System.out.println("Choose the row number that matches where you want to enter your score");
+    System.out.println("***to enter a score of 0 choose a field that doesn't match your roll");
+    System.out.println("Your choice: ");
+    str=c.nextLine();
+    try{
+      num=Integer.parseInt(str);
+    }
+    catch(NumberFormatException e)
+    {
+      System.out.println("Wrong selection, please pick again...");
+      this.waitASec();
+      this.pickScore();
+    }
+    if(num>0 && num<=13){
+      ScoreProcessor sp = sf.getScore(num);
+      this.enterScore(sp);
+    }
+    else{
+      System.out.println("Wrong selection, please pick again...");
+      this.waitASec();
+      this.pickScore();
+    }
+}
+
+  public void enterScore(ScoreProcessor sp){
+    sp.setScore(rd.getRoll(),sc);
+
+    this.clearScreen();
+    System.out.println(sc.toString());
+
+    if(gc.getCount()<13){
+      System.out.println("Next turn...");
+
+      this.waitASec();
+      this.firstRoll();
+    }
+
+    else{this.endGame();}
+  }
+
+  public void endGame(){
+    this.viewUI();
+    System.out.println("THANK YOU FOR PLAYING, GOOD-BYE");
+    c.close();
+  }
+}
+import java.util.*;
+
+public class RollDice{
+  private static RollDice instance;
+  Dice d=Dice.getInstance();
+  int[] r=new int[5];
+  private String dstr="";
+  private String vstr="";
+
+  public RollDice(){}
+
+  public static RollDice getInstance(){
+    if(instance==null){return new RollDice();}
+    return instance;
+  }
+
+  public void setRoll(int[] i){this.r=i;}
+  public int[] getRoll(){return this.r;}
+
+  public int[] newRoll(){
+    for(int i=0;i<r.length;i++){
+      d.setValue();
+      r[i]=d.getValue();
+    }
+    this.setRoll(r);
+    return r;
+  }
+
+  public void reRoll(int i){
+    this.getRoll();
+    r[i]=this.newValue();
+    this.setRoll(r);
+  }
+
+  public int newValue(){
+    d.setValue();
+    return d.getValue();
+  }
+
+  public void setString(int[] i){
+    dstr="Dice:  ";
+    vstr="Value: ";
+    for(int j=0;j<i.length;j++){
+      dstr=dstr+"["+(j+1)+"] ";
+      vstr=vstr+" "+i[j]+"  ";
+    }
+  }
+
+  public String getD(){return dstr;}
+  public String getV(){return vstr;}
+
+  public void printRoll(){
+    this.setString(this.getRoll());
+    System.out.println(this.getD());
+    System.out.println(this.getV());
+  }
+
+}
+import java.util.*;
+
+public class RollValidate{
+  private static RollValidate instance;
+  private Scanner c=new Scanner(System.in);
+
+  public static RollValidate getInstance(){
+    if(instance==null){return new RollValidate();}
+    return instance;
+  }
+
+  public RollValidate(){}
+
+  public boolean getValidate(List<Integer> l){
+    System.out.println("Are you sure you want to change these "+l.toString()+" dice? (y or n)");
+    if(c.nextLine().equals("y")){return true;}
+    return false;
+  }
+}
+public class Scorecard{
+  private static Scorecard instance;
+  private int[] ts = new int[6];
+  private int[] bs = new int[7];
+  private String u="";
+
+  public Scorecard(){
+    for(int j=0;j<ts.length;j++){ts[j]+=-1;}
+    for(int j=0;j<bs.length;j++){bs[j]+=-1;}
+  }
+
+  public void setName(String s){this.u=s;}
+  public String getName(){return this.u;}
+
+  public static Scorecard getInstance(){
+    if(instance==null){return new Scorecard();}
+    return instance;
+  }
+
+  public int ts(){
+    int num=0;
+    for(int i:ts){if(i!=-1){num+=i;}}
+    return num;
+  }
+
+  public int bs(){
+    int num=0;
+    for(int i:bs){if(i!=-1){num+=i;}}
+    return num;
+  }
+
+  public String getTopScore(int i){
+    if(this.ts[i]==-1){return "--";}
+    else{return ""+this.ts[i];}
+  }
+
+  public String getBottomScore(int i){
+    if(this.bs[i]==-1){return "--";}
+    else{return ""+this.bs[i];}
+  }
+
+  public void setOnes(int i){this.ts[0]=i;}
+  public String getOnes(){return getTopScore(0);}
+
+  public void setTwos(int i){this.ts[1]=i;}
+  public String getTwos(){return getTopScore(1);}
+
+  public void setThrees(int i){this.ts[2]=i;}
+  public String getThrees(){return getTopScore(2);}
+
+  public void setFours(int i){this.ts[3]=i;}
+  public String getFours(){return getTopScore(3);}
+
+  public void setFives(int i){this.ts[4]=i;}
+  public String getFives(){return getTopScore(4);}
+
+  public void setSixes(int i){this.ts[5]=i;}
+  public String getSixes(){return getTopScore(5);}
+
+  public void setToak(int i){this.bs[0]=i;}
+  public String getToak(){return getBottomScore(0);}
+
+  public void setFoak(int i){this.bs[1]=i;}
+  public String getFoak(){return getBottomScore(1);}
+
+  public void setFH(int i){this.bs[2]=i;}
+  public String getFH(){return getBottomScore(2);}
+
+  public void setSS(int i){this.bs[3]=i;}
+  public String getSS(){return getBottomScore(3);}
+
+  public void setLS(int i){this.bs[4]=i;}
+  public String getLS(){return getBottomScore(4);}
+
+  public void setY(int i){this.bs[5]=i;}
+  public String getY(){return getBottomScore(5);}
+
+  public void setC(int i){this.bs[6]=i;}
+  public String getC(){return getBottomScore(6);}
+
+  public String toString(){
+    String s="";
+    s+="-----------------------\n";
+    s+="User: "+u+"\n";
+    s+="-----------------------\n";
+    s+="-----------------------\n";
+    s+="(1)  ONES:          "+this.getOnes()+"\n";
+    s+="(2)  TWOS:          "+this.getTwos()+"\n";
+    s+="(3)  THREES:        "+this.getThrees()+"\n";
+    s+="(4)  FOUR:          "+this.getFours()+"\n";
+    s+="(5)  FIVES:         "+this.getFives()+"\n";
+    s+="(6)  SIXES:         "+this.getSixes()+"\n";
+    s+="-----------------------\n";
+    s+="SUBTOTAL:           "+this.ts()+"\n";
+    if(this.ts()>=63){
+      s+="TOP BONUS:          35"+"\n";
+      s+="TOP TOTAL:          "+(this.ts()+35)+"\n";
+    }
+    else{
+      s+="TOP BONUS:          0\n";
+      s+="TOP TOTAL:          "+this.ts()+"\n";
+    }
+    s+="-----------------------\n";
+    s+="(7)  3 OF A KIND:   "+this.getToak()+"\n";
+    s+="(8)  4 OF A KIND:   "+this.getFoak()+"\n";
+    s+="(9)  FULL HOUSE:    "+this.getFH()+"\n";
+    s+="(10) SMALL STRT:    "+this.getSS()+"\n";
+    s+="(11) LARGE STRT:    "+this.getLS()+"\n";
+    s+="(12) YAHTZEE:       "+this.getY()+"\n";
+    s+="(13) CHANCE:        "+this.getC()+"\n";
+    s+="------------------------\n";
+    s+="BOTTOM TOTAL:       "+this.bs()+"\n";
+    s+="------------------------\n";
+    s+="------------------------\n";
+    if(this.ts()>=63){
+      s+="       TOTAL SCORE: "+(this.ts()+35+this.bs());
+    }else{
+      s+="       TOTAL SCORE: "+(this.ts()+this.bs());
+    }
+    s+="\n-----------------------\n";
+    return s;
+  }
+}
+public class ScoreC implements ScoreProcessor{
+  private int ttl=0;
+
+  public ScoreC(){}
+
+  @Override
+  public void setScore(int[] i, Scorecard s){
+    for(int v:i){ttl+=v;}
+    s.setC(ttl);
+  }
+}
+public class ScoreFactory{
+  public ScoreProcessor getScore(int i){
+    switch(i){
+      case(1):
+        return new ScoreOnes();
+      case(2):
+        return new ScoreTwos();
+      case(3):
+        return new ScoreThrees();
+      case(4):
+        return new ScoreFours();
+      case(5):
+        return new ScoreFives();
+      case(6):
+        return new ScoreSixes();
+      case(7):
+        return new ScoreToak();
+      case(8):
+        return new ScoreFoak();
+      case(9):
+        return new ScoreFH();
+      case(10):
+        return new ScoreSS();
+      case(11):
+        return new ScoreLS();
+      case(12):
+        return new ScoreY();
+      case(13):
+        return new ScoreC();
+    }
+    return null;
+  }
+}
+import java.util.Arrays;
+
+public class ScoreFH implements ScoreProcessor{
+  private int num=0;
+
+  public ScoreFH(){}
+
+  @Override
+  public void setScore(int[] i, Scorecard s){
+    Arrays.sort(i);
+    if(i[0]==i[1]&&i[1]==i[2]&&i[3]==i[4] || i[0]==i[1]&&i[2]==i[3]&&i[3]==i[4]){
+      s.setFH(25);
+    }
+    else{
+      s.setFH(0);
+    }
+  }
+}
+public class ScoreFives implements ScoreProcessor{
+  private int num=0;
+
+  public ScoreFives(){}
+
+  @Override
+  public void setScore(int[] i, Scorecard s){
+    for (int v:i){
+      if(v==5)num+=v;
+    }
+    s.setFives(num);
+  }
+}
+import java.util.Arrays;
+
+public class ScoreFoak implements ScoreProcessor{
+  public ScoreFoak(){}
+
+  @Override
+  public void setScore(int[] i, Scorecard s){
+    int ttl=0;
+    Arrays.sort(i);
+
+    if(i[0]==i[3]||i[1]==i[4])
+      for (int v:i){ttl+=v;}
+    s.setFoak(ttl);
+  }
+}
+public class ScoreFours implements ScoreProcessor{
+  private int num=0;
+
+  public ScoreFours(){}
+
+  @Override
+  public void setScore(int[] i, Scorecard s){
+    for (int v:i){
+      if(v==4)num+=v;
+    }
+    s.setFours(num);
+  }
+}
+import java.util.Arrays;
+
+public class ScoreLS implements ScoreProcessor{
+  private int num=0;
+
+  public ScoreLS(){}
+
+  @Override
+  public void setScore(int[] i, Scorecard s){
+    Arrays.sort(i);
+    for(int j=0;j<i.length-1;j++){
+      if(i[j]<i[j+1]){
+        if(i[j+1]-i[j]==1){num++;}
+      }
+    }
+    if(num==4){s.setLS(40);}
+    else{s.setLS(0);}
+    }
+}
+public class ScoreOnes implements ScoreProcessor{
+  private int num=0;
+
+  public ScoreOnes(){}
+
+  @Override
+  public void setScore(int[] i, Scorecard s){
+    for (int v:i){
+      if(v==1)num+=v;
+    }
+    s.setOnes(num);
+  }
+}
+public interface ScoreProcessor{
+  public void setScore(int[] i,Scorecard s);
+}
+public class ScoreSixes implements ScoreProcessor{
+  private int num=0;
+
+  public ScoreSixes(){}
+
+  @Override
+  public void setScore(int[] i, Scorecard s){
+    for (int v:i){
+      if(v==6)num+=v;
+    }
+    s.setSixes(num);
+  }
+}
+import java.util.*;
+
+public class ScoreSS implements ScoreProcessor{
+  private int num=0;
+
+  public ScoreSS(){}
+
+  @Override
+  public void setScore(int[] i, Scorecard s){
+    Arrays.sort(i);
+    for(int j=0;j<i.length-1;j++){
+      if(i[j]<i[j+1]){
+        if(i[j+1]-i[j]==1){num++;}
+      }
+    }
+    if(num==3){s.setSS(30);}
+    else{s.setSS(0);}
+  }
+}
+public class ScoreThrees implements ScoreProcessor{
+  private int num=0;
+
+  public ScoreThrees(){}
+
+  @Override
+  public void setScore(int[] i, Scorecard s){
+    for (int v:i){if(v==3)num+=v;}
+    s.setThrees(num);
+  }
+}
+import java.util.Arrays;
+
+public class ScoreToak implements ScoreProcessor{
+  public ScoreToak(){}
+
+  @Override
+  public void setScore(int[] i, Scorecard s){
+    int ttl=0;
+    Arrays.sort(i);
+
+    if(i[0]==i[2]||i[1]==i[3]||i[2]==i[4])
+      for (int v:i){ttl+=v;}
+    s.setToak(ttl);
+  }
+}
+public class ScoreTwos implements ScoreProcessor{
+  private int num=0;
+  
+  public ScoreTwos(){}
+
+  @Override
+  public void setScore(int[] i, Scorecard s){
+    for (int v:i){
+      if(v==2)num+=v;
+    }
+    s.setTwos(num);
+  }
+}
+import java.util.Arrays;
+
+public class ScoreY implements ScoreProcessor{
+  public ScoreY(){}
+
+  @Override
+  public void setScore(int[] i, Scorecard s){
+    Arrays.sort(i);
+    if(i[0]==i[4]){s.setY(50);}
+    else{s.setY(0);}
+  }
+}
+import java.util.*;
+
+public class SoloGame extends Game{
+  private static SoloGame instance;
+  private Scanner c=new Scanner(System.in);
+
+  public static SoloGame getInstance(){
+    if(instance==null){return new SoloGame();}
+    return instance;
+  }
+
+  public SoloGame(){
+
+    System.out.println(" .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. ");
+    System.out.println("| .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |");
+    System.out.println("| |  ____  ____  | || |      __      | || |  ____  ____  | || |  _________   | || |   ________   | || |  _________   | || |  _________   | |");
+    System.out.println("| | |_  _||_  _| | || |     /  \\     | || | |_   ||   _| | || | |  _   _  |  | || |  |  __   _|  | || | |_   ___  |  | || | |_   ___  |  | |");
+    System.out.println("| |   \\ \\  / /   | || |    / /\\ \\    | || |   | |__| |   | || | |_/ | | \\_|  | || |  |_/  / /    | || |   | |_  \\_|  | || |   | |_  \\_|  | |");
+    System.out.println("| |    \\ \\/ /    | || |   / ____ \\   | || |   |  __  |   | || |     | |      | || |     .'.' _   | || |   |  _|  _   | || |   |  _|  _   | |");
+    System.out.println("| |    _|  |_    | || | _/ /    \\ \\_ | || |  _| |  | |_  | || |    _| |_     | || |   _/ /__/ |  | || |  _| |___/ |  | || |  _| |___/ |  | |");
+    System.out.println("| |   |______|   | || ||____|  |____|| || | |____||____| | || |   |_____|    | || |  |________|  | || | |_________|  | || | |_________|  | |");
+    System.out.println("| |              | || |              | || |              | || |              | || |              | || |              | || |              | |");
+    System.out.println("| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |");
+    System.out.println(" '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' ");
+
+    System.out.println("");
+    System.out.print("Welcome player, what is your name? ");
+    super.setName(c.nextLine());
+    System.out.println("Welcome, "+super.getName());
+    System.out.println("######################################");
+    System.out.println("LET\'S PLAY!");
+
+    try{Thread.sleep(5000);}
+    catch (InterruptedException e){e.printStackTrace();}
+
+    super.clearScreen();
+    super.firstRoll();
+  }
+}
+import java.util.*;
+
+public class Test{
+  public static void main(String[] args){
+    SoloGame sg1=SoloGame.getInstance();
+  }
+}

@@ -4,10 +4,14 @@ public class ScoreOnes implements ScoreProcessor{
   public ScoreOnes(){}
 
   @Override
-  public void setScore(int[] i, Scorecard s){
+  public boolean setScore(int[] i, Scorecard s){
     for (int v:i){
       if(v==1)num+=v;
     }
-    s.setOnes(num);
+    if(PreventDoubleScore.checkScore(s.getOnes())){
+      s.setOnes(num);
+      return true;
+    }
+    return false;
   }
 }

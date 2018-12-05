@@ -4,10 +4,14 @@ public class ScoreFives implements ScoreProcessor{
   public ScoreFives(){}
 
   @Override
-  public void setScore(int[] i, Scorecard s){
+  public boolean setScore(int[] i, Scorecard s){
     for (int v:i){
       if(v==5)num+=v;
     }
-    s.setFives(num);
+    if(PreventDoubleScore.checkScore(s.getFives())){
+      s.setFives(num);
+      return true;
+    }
+    return false;
   }
 }

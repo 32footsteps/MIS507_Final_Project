@@ -35,11 +35,17 @@ public class Scorecard{
   }
 
   public String getBottomScore(int i){
-    if(this.bs[i]==-1){return "--";}
-    else{return ""+this.bs[i];}
+    if(this.bs[i]==-1){
+      return "--";
+    }
+    else{
+      return ""+this.bs[i];
+    }
   }
 
-  public void setOnes(int i){this.ts[0]=i;}
+  public void setOnes(int i){
+    this.ts[0]=i;
+  }
   public String getOnes(){return getTopScore(0);}
 
   public void setTwos(int i){this.ts[1]=i;}

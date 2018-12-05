@@ -4,21 +4,29 @@ public class Game{
   private Scorecard sc=Scorecard.getInstance();
   private RollDice rd=RollDice.getInstance();
   private ScoreFactory sf=new ScoreFactory();
-  private GameCounter gc=new GameCounter();
   private RollValidate rv=new RollValidate();
+  private Subject sub = new Subject();
   Scanner c=new Scanner(System.in);
   List<Integer> l=new ArrayList<Integer>();
   int x=0;
 
 
-  public Game(){}
+  public Game(){
+    new GameCounter(sub);
+    sub.setState(0);
+  }
 
-  public void setName(String s){sc.setName(s);}
-  public String getName(){return sc.getName();}
+  public void setName(String s){
+    sc.setName(s);
+  }
+
+  public String getName(){
+    return sc.getName();
+  }
 
   public void clearScreen() {
-   System.out.print("\033[H\033[2J");
-   System.out.flush();
+    System.out.print("\033[H\033[2J");
+    System.out.flush();
   }
 
   public void viewUI(){
@@ -38,13 +46,16 @@ public class Game{
   }
 
   public void waitASec(){
-    try{Thread.sleep(2500);}
-    catch (InterruptedException e){e.printStackTrace();}
+    try{
+      Thread.sleep(2500);
+    }
+    catch (InterruptedException e){
+      e.printStackTrace();
+    }
   }
 
   public void firstRoll(){
     x=1;
-    gc.setCount();
     rd.newRoll();
     this.viewUI();
     this.rollAgain();
@@ -66,10 +77,25 @@ public class Game{
   }
 
   public void pickDice(){
+    int num=0;
+    String str="";
     System.out.println("Which dice do you want to reroll? (pick the dice number)");
-    int num=c.nextInt();
+    str=c.nextLine();
+    try{
+      num=Integer.parseInt(str);
+    }
+    catch(NumberFormatException e)
+    {
+      System.out.println("Wrong selection, please pick again...");
+      this.waitASec();
+      this.pickDice();
+    }
+    if(num<1&&num>5){
+      System.out.println("Wrong selection, please pick again...");
+      this.waitASec();
+      this.pickDice();
+    }
     l.add(num);
-    c.nextLine();
     System.out.println("Do you want to change another dice?");
     if(c.nextLine().equals("y")){
       this.pickDice();
@@ -124,27 +150,41 @@ public class Game{
       this.waitASec();
       this.pickScore();
     }
-}
+  }
 
   public void enterScore(ScoreProcessor sp){
-    sp.setScore(rd.getRoll(),sc);
-
-    this.clearScreen();
-    System.out.println(sc.toString());
-
-    if(gc.getCount()<13){
+    if(sp.setScore(rd.getRoll(),sc)){
+      this.clearScreen();
+      System.out.println(sc.toString());
+    }
+    else{
+      this.viewUI();
+      System.out.println("You have already recorded a score for that.");
+      System.out.println("Please pick another way to score it.");
+      this.waitASec();
+      this.pickScore();
+    }
+    if(sub.getState()<13){
       System.out.println("Next turn...");
-
+      sub.setState(sub.getState()+1);
       this.waitASec();
       this.firstRoll();
     }
-
-    else{this.endGame();}
+    else{
+      this.endGame();
+    }
   }
 
   public void endGame(){
     this.viewUI();
-    System.out.println("THANK YOU FOR PLAYING, GOOD-BYE");
+    System.out.println("Great job!");
+    System.out.println("Would you like to play again? (y or n)");
+    if(c.nextLine().equals("y")){
+      SoloGame sg1=SoloGame.getInstance();
+    }
+    else{
+      System.out.println("Thank you for playing, good-bye.");
+    }
     c.close();
   }
 }

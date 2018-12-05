@@ -1,3 +1,3 @@
 public interface ScoreProcessor{
-  public void setScore(int[] i,Scorecard s);
+  public boolean setScore(int[] i,Scorecard s);
 }
